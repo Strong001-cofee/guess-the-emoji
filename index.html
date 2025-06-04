@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guess the Emoji</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: white;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .title {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-between;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        margin-bottom: 30px;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+        opacity: 0.8;
+      }
+
+      .stat-value {
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .game-area {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        padding: 40px 20px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        margin-bottom: 30px;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .emoji-display {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        animation: bounce 2s infinite;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-10px);
+        }
+        60% {
+          transform: translateY(-5px);
+        }
+      }
+
+      .puzzle-hint {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        min-height: 25px;
+        opacity: 0.9;
+      }
+
+      .input-area {
+        margin-bottom: 20px;
+      }
+
+      .guess-input {
+        width: 100%;
+        max-width: 300px;
+        padding: 15px;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 10px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      .guess-input:focus {
+        outline: none;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: bold;
+      }
+
+      .btn-primary {
+        background: #4caf50;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #45a049;
+        transform: translateY(-2px);
+      }
+
+      .btn-secondary {
+        background: #ff9800;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #e68900;
+        transform: translateY(-2px);
+      }
+
+      .btn-restart {
+        background: #f44336;
+        color: white;
+      }
+
+      .btn-restart:hover {
+        background: #da190b;
+        transform: translateY(-2px);
+      }
+
+      .feedback {
+        margin-top: 20px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        min-height: 30px;
+        transition: all 0.3s ease;
+      }
+
+      .correct {
+        color: #4caf50;
+        animation: celebrate 0.6s ease;
+      }
+
+      .incorrect {
+        color: #f44336;
+        animation: shake 0.5s ease;
+      }
+
+      @keyframes celebrate {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+
+      .game-complete {
+        text-align: center;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        padding: 40px 20px;
+        backdrop-filter: blur(10px);
+      }
+
+      .leaderboard {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+
+      .leaderboard h3 {
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .leaderboard-entry {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .fade-transition {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .fade-in {
+        opacity: 1;
+      }
+
+      @media (max-width: 480px) {
+        .title {
+          font-size: 2rem;
+        }
+
+        .emoji-display {
+          font-size: 3rem;
+        }
+
+        .stats {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .button-group {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .btn {
+          width: 200px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1 class="title">🎯 Guess the Emoji</h1>
+      </div>
+
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-label">Level</div>
+          <div class="stat-value" id="level-display">1</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Score</div>
+          <div class="stat-value" id="score-display">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Time</div>
+          <div class="stat-value" id="timer-display">00:00</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Hints Left</div>
+          <div class="stat-value" id="hints-display">1</div>
+        </div>
+      </div>
+
+      <div class="game-area" id="game-area">
+        <div class="emoji-display" id="emoji-display">🐍💻</div>
+        <div class="puzzle-hint" id="puzzle-hint"></div>
+        <div class="input-area">
+          <input
+            type="text"
+            class="guess-input"
+            id="guess-input"
+            placeholder="Type your guess here..."
+            autocomplete="off"
+          />
+        </div>
+        <div class="button-group">
+          <button class="btn btn-primary" id="submit-btn">Submit Guess</button>
+          <button class="btn btn-secondary" id="hint-btn">Get Hint</button>
+          <button class="btn btn-restart" id="restart-btn">Restart Game</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+
+      <div class="game-complete" id="game-complete" style="display: none">
+        <h2>🎉 Congratulations!</h2>
+        <p id="final-score"></p>
+        <div class="leaderboard" id="leaderboard">
+          <h3>🏆 Best Scores</h3>
+          <div id="leaderboard-list"></div>
+        </div>
+        <button
+          class="btn btn-primary"
+          id="play-again-btn"
+          style="margin-top: 20px"
+        >
+          Play Again
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Game state management
+      class EmojiGame {
+        constructor() {
+          this.allPuzzles = [
+            // Tech & Programming
+            {
+              emojis: "🐍💻",
+              answer: "python",
+              hint: "Programming language named after a snake",
+            },
+            {
+              emojis: "🍎📱",
+              answer: "iphone",
+              hint: "Fruit company's popular smartphone",
+            },
+            {
+              emojis: "☕️☕️",
+              answer: "java",
+              hint: "Programming language that's also a beverage",
+            },
+            {
+              emojis: "🔥🦊",
+              answer: "firefox",
+              hint: "Web browser with a fiery mascot",
+            },
+            {
+              emojis: "🌐💙",
+              answer: "facebook",
+              hint: "Social media platform with a blue theme",
+            },
+            {
+              emojis: "🐦💬",
+              answer: "twitter",
+              hint: "Social media platform for short messages",
+            },
+            { emojis: "📧📨", answer: "email", hint: "Electronic mail system" },
+            {
+              emojis: "🔒🔑",
+              answer: "password",
+              hint: "Secret code to access accounts",
+            },
+            {
+              emojis: "☁️💾",
+              answer: "cloud storage",
+              hint: "Online data storage service",
+            },
+            {
+              emojis: "🖥️⌨️",
+              answer: "computer",
+              hint: "Electronic device for processing data",
+            },
+
+            // Movies & Entertainment
+            {
+              emojis: "🎬🍿",
+              answer: "movie",
+              hint: "What you watch at the cinema",
+            },
+            {
+              emojis: "🦁👑",
+              answer: "lion king",
+              hint: "Disney movie about a young lion prince",
+            },
+            {
+              emojis: "🕷️👨",
+              answer: "spiderman",
+              hint: "Superhero who swings on webs",
+            },
+            {
+              emojis: "⚡👦",
+              answer: "harry potter",
+              hint: "Boy wizard with a lightning scar",
+            },
+            {
+              emojis: "🚢❄️",
+              answer: "titanic",
+              hint: "Famous movie about a doomed ship",
+            },
+            { emojis: "👻👻", answer: "ghost", hint: "Supernatural spirit" },
+            {
+              emojis: "🎭🎪",
+              answer: "circus",
+              hint: "Traveling show with acrobats and clowns",
+            },
+            {
+              emojis: "🎵🎤",
+              answer: "karaoke",
+              hint: "Singing along to recorded music",
+            },
+            {
+              emojis: "🎮🕹️",
+              answer: "video game",
+              hint: "Interactive electronic entertainment",
+            },
+            {
+              emojis: "📺📻",
+              answer: "television",
+              hint: "Device for watching shows and news",
+            },
+
+            // Food & Drinks
+            {
+              emojis: "🍕🚗",
+              answer: "pizza delivery",
+              hint: "Food service that brings Italian food to your door",
+            },
+            {
+              emojis: "🍔🍟",
+              answer: "fast food",
+              hint: "Quick service restaurant meals",
+            },
+            {
+              emojis: "🥛🍪",
+              answer: "milk and cookies",
+              hint: "Classic bedtime snack combination",
+            },
+            {
+              emojis: "🍎🥧",
+              answer: "apple pie",
+              hint: "Classic American dessert",
+            },
+            {
+              emojis: "🧀🍞",
+              answer: "grilled cheese",
+              hint: "Melted cheese sandwich",
+            },
+            {
+              emojis: "🌮🌶️",
+              answer: "spicy taco",
+              hint: "Mexican food with heat",
+            },
+            {
+              emojis: "🍝🍅",
+              answer: "spaghetti",
+              hint: "Italian pasta with tomato sauce",
+            },
+            { emojis: "🥤🧊", answer: "cold drink", hint: "Chilled beverage" },
+            {
+              emojis: "☕🌅",
+              answer: "morning coffee",
+              hint: "Wake-up beverage at dawn",
+            },
+            {
+              emojis: "🍰🎂",
+              answer: "birthday cake",
+              hint: "Sweet treat for celebrations",
+            },
+
+            // Nature & Weather
+            {
+              emojis: "🌙⭐",
+              answer: "night",
+              hint: "When the moon and stars are visible",
+            },
+            {
+              emojis: "🏖️🌞",
+              answer: "summer",
+              hint: "Hottest season of the year",
+            },
+            {
+              emojis: "❄️⛄",
+              answer: "winter",
+              hint: "Coldest season with snow",
+            },
+            {
+              emojis: "🌧️☔",
+              answer: "rainy day",
+              hint: "Wet weather requiring an umbrella",
+            },
+            {
+              emojis: "🌈☀️",
+              answer: "sunshine",
+              hint: "Bright light from the sun",
+            },
+            {
+              emojis: "🌊🏄",
+              answer: "surfing",
+              hint: "Riding waves on a board",
+            },
+            {
+              emojis: "🏔️🥾",
+              answer: "hiking",
+              hint: "Walking in the mountains",
+            },
+            {
+              emojis: "🌸🌺",
+              answer: "flowers",
+              hint: "Colorful blooms in gardens",
+            },
+            {
+              emojis: "🦋🌷",
+              answer: "butterfly",
+              hint: "Colorful insect that visits flowers",
+            },
+            {
+              emojis: "🌙🌊",
+              answer: "night tide",
+              hint: "Ocean waves under moonlight",
+            },
+
+            // Daily Life & Objects
+            { emojis: "🏠🔑", answer: "home", hint: "Where the heart is" },
+            {
+              emojis: "🚗⛽",
+              answer: "gas station",
+              hint: "Where you fuel up your car",
+            },
+            {
+              emojis: "🛏️😴",
+              answer: "sleep",
+              hint: "Resting at night in bed",
+            },
+            {
+              emojis: "📚📖",
+              answer: "reading",
+              hint: "Looking at words in books",
+            },
+            {
+              emojis: "✈️🧳",
+              answer: "travel",
+              hint: "Going places with luggage",
+            },
+            { emojis: "💍💒", answer: "wedding", hint: "Marriage ceremony" },
+            {
+              emojis: "🎓📜",
+              answer: "graduation",
+              hint: "Completing school with a diploma",
+            },
+            {
+              emojis: "💰💳",
+              answer: "shopping",
+              hint: "Buying things with money",
+            },
+            {
+              emojis: "🏥⚕️",
+              answer: "hospital",
+              hint: "Medical care facility",
+            },
+            {
+              emojis: "🚌🎒",
+              answer: "school bus",
+              hint: "Yellow vehicle that takes kids to school",
+            },
+
+            // Music & Arts
+            { emojis: "🎵💝", answer: "love song", hint: "Romantic melody" },
+            {
+              emojis: "🎸🎵",
+              answer: "guitar music",
+              hint: "String instrument melody",
+            },
+            {
+              emojis: "🎹🎼",
+              answer: "piano",
+              hint: "Black and white key instrument",
+            },
+            {
+              emojis: "🎨🖌️",
+              answer: "painting",
+              hint: "Creating art with brushes and colors",
+            },
+            {
+              emojis: "📸📷",
+              answer: "photography",
+              hint: "Taking pictures with a camera",
+            },
+            {
+              emojis: "💃🕺",
+              answer: "dancing",
+              hint: "Moving to the rhythm of music",
+            },
+            {
+              emojis: "🎪🤹",
+              answer: "juggling",
+              hint: "Keeping multiple objects in the air",
+            },
+            { emojis: "🎭🎨", answer: "theater", hint: "Live performance art" },
+            {
+              emojis: "📝✏️",
+              answer: "writing",
+              hint: "Creating text with a pencil",
+            },
+            {
+              emojis: "🎬🎥",
+              answer: "filmmaking",
+              hint: "Creating movies with cameras",
+            },
+
+            // Sports & Activities
+            {
+              emojis: "⚽🥅",
+              answer: "soccer",
+              hint: "World's most popular sport with goals",
+            },
+            {
+              emojis: "🏀🏆",
+              answer: "basketball",
+              hint: "Sport with hoops and a trophy",
+            },
+            {
+              emojis: "🎾🏓",
+              answer: "tennis",
+              hint: "Racket sport on a court",
+            },
+            {
+              emojis: "🏊‍♂️🏊‍♀️",
+              answer: "swimming",
+              hint: "Moving through water",
+            },
+            { emojis: "🚴‍♂️🚴‍♀️", answer: "cycling", hint: "Riding a bicycle" },
+            {
+              emojis: "🏃‍♂️💨",
+              answer: "running",
+              hint: "Fast movement on foot",
+            },
+            {
+              emojis: "🧗‍♂️🏔️",
+              answer: "rock climbing",
+              hint: "Scaling stone walls",
+            },
+            {
+              emojis: "🎣🐟",
+              answer: "fishing",
+              hint: "Catching fish with a rod",
+            },
+            {
+              emojis: "⛳🏌️",
+              answer: "golf",
+              hint: "Sport with clubs and holes",
+            },
+            {
+              emojis: "🥊🥋",
+              answer: "boxing",
+              hint: "Combat sport with gloves",
+            },
+          ];
+
+          // Shuffle puzzles and select random subset
+          this.puzzles = this.shuffleArray([...this.allPuzzles]).slice(0, 15);
+
+          this.currentLevel = 0;
+          this.score = 0;
+          this.startTime = Date.now();
+          this.hintsUsed = 0;
+          this.maxHintsPerPuzzle = 1;
+          this.currentHints = this.maxHintsPerPuzzle;
+
+          this.initializeElements();
+          this.setupEventListeners();
+          this.startTimer();
+          this.displayCurrentPuzzle();
+        }
+
+        // Initialize DOM elements
+        initializeElements() {
+          this.gameArea = document.getElementById("game-area");
+          this.emojiDisplay = document.getElementById("emoji-display");
+          this.puzzleHint = document.getElementById("puzzle-hint");
+          this.guessInput = document.getElementById("guess-input");
+          this.submitBtn = document.getElementById("submit-btn");
+          this.hintBtn = document.getElementById("hint-btn");
+          this.restartBtn = document.getElementById("restart-btn");
+          this.feedback = document.getElementById("feedback");
+          this.levelDisplay = document.getElementById("level-display");
+          this.scoreDisplay = document.getElementById("score-display");
+          this.timerDisplay = document.getElementById("timer-display");
+          this.hintsDisplay = document.getElementById("hints-display");
+          this.gameComplete = document.getElementById("game-complete");
+          this.finalScore = document.getElementById("final-score");
+          this.playAgainBtn = document.getElementById("play-again-btn");
+        }
+
+        // Setup event listeners
+        setupEventListeners() {
+          this.submitBtn.addEventListener("click", () => this.checkAnswer());
+          this.hintBtn.addEventListener("click", () => this.showHint());
+          this.restartBtn.addEventListener("click", () => this.restartGame());
+          this.playAgainBtn.addEventListener("click", () => this.restartGame());
+
+          this.guessInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") this.checkAnswer();
+          });
+
+          this.guessInput.addEventListener("input", () => {
+            this.feedback.textContent = "";
+            this.feedback.className = "feedback";
+          });
+        }
+
+        // Display current puzzle
+        displayCurrentPuzzle() {
+          if (this.currentLevel >= this.puzzles.length) {
+            this.completeGame();
+            return;
+          }
+
+          const puzzle = this.puzzles[this.currentLevel];
+
+          // Fade out and update
+          this.gameArea.classList.add("fade-transition");
+
+          setTimeout(() => {
+            this.emojiDisplay.textContent = puzzle.emojis;
+            this.puzzleHint.textContent = "";
+            this.guessInput.value = "";
+            this.feedback.textContent = "";
+            this.feedback.className = "feedback";
+            this.currentHints = this.maxHintsPerPuzzle;
+
+            this.updateDisplay();
+            this.gameArea.classList.remove("fade-transition");
+            this.gameArea.classList.add("fade-in");
+
+            setTimeout(() => {
+              this.gameArea.classList.remove("fade-in");
+              this.guessInput.focus();
+            }, 300);
+          }, 300);
+        }
+
+        // Check player's answer
+        checkAnswer() {
+          const guess = this.guessInput.value.trim().toLowerCase();
+          const correctAnswer =
+            this.puzzles[this.currentLevel].answer.toLowerCase();
+
+          if (!guess) {
+            this.showFeedback("Please enter a guess!", "incorrect");
+            return;
+          }
+
+          if (guess === correctAnswer) {
+            this.score += 10;
+            this.showFeedback("✅ Correct!", "correct");
+
+            setTimeout(() => {
+              this.currentLevel++;
+              this.displayCurrentPuzzle();
+            }, 1500);
+          } else {
+            this.showFeedback("❌ Try again!", "incorrect");
+            this.guessInput.select();
+          }
+        }
+
+        // Show hint for current puzzle
+        showHint() {
+          if (this.currentHints <= 0) {
+            this.showFeedback("No hints left for this puzzle!", "incorrect");
+            return;
+          }
+
+          const puzzle = this.puzzles[this.currentLevel];
+          this.puzzleHint.textContent = `💡 Hint: ${puzzle.hint}`;
+          this.currentHints--;
+          this.hintsUsed++;
+          this.score = Math.max(0, this.score - 2);
+
+          this.updateDisplay();
+          this.guessInput.focus();
+        }
+
+        // Show feedback message
+        showFeedback(message, type) {
+          this.feedback.textContent = message;
+          this.feedback.className = `feedback ${type}`;
+        }
+
+        // Update display elements
+        updateDisplay() {
+          this.levelDisplay.textContent = this.currentLevel + 1;
+          this.scoreDisplay.textContent = this.score;
+          this.hintsDisplay.textContent = this.currentHints;
+        }
+
+        // Start game timer
+        startTimer() {
+          this.timerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60)
+              .toString()
+              .padStart(2, "0");
+            const seconds = (elapsed % 60).toString().padStart(2, "0");
+            this.timerDisplay.textContent = `${minutes}:${seconds}`;
+          }, 1000);
+        }
+
+        // Complete the game
+        completeGame() {
+          clearInterval(this.timerInterval);
+          const finalTime = Math.floor((Date.now() - this.startTime) / 1000);
+
+          this.gameArea.style.display = "none";
+          this.gameComplete.style.display = "block";
+
+          this.finalScore.innerHTML = `
+                    <p style="font-size: 1.5rem; margin-bottom: 15px;">Game Complete!</p>
+                    <p>Final Score: <strong>${this.score}</strong></p>
+                    <p>Time: <strong>${Math.floor(finalTime / 60)}:${(
+            finalTime % 60
+          )
+            .toString()
+            .padStart(2, "0")}</strong></p>
+                    <p>Hints Used: <strong>${this.hintsUsed}</strong></p>
+                `;
+
+          this.saveScore(this.score, finalTime, this.hintsUsed);
+          this.displayLeaderboard();
+        }
+
+        // Save score to memory (using variables instead of localStorage)
+        saveScore(score, time, hints) {
+          if (!window.gameScores) {
+            window.gameScores = [];
+          }
+
+          const newScore = {
+            score: score,
+            time: time,
+            hints: hints,
+            date: new Date().toLocaleDateString(),
+          };
+
+          window.gameScores.push(newScore);
+          window.gameScores.sort((a, b) => {
+            // Sort by score (descending), then by time (ascending), then by hints (ascending)
+            if (b.score !== a.score) return b.score - a.score;
+            if (a.time !== b.time) return a.time - b.time;
+            return a.hints - b.hints;
+          });
+
+          // Keep only top 5 scores
+          window.gameScores = window.gameScores.slice(0, 5);
+        }
+
+        // Display leaderboard
+        displayLeaderboard() {
+          const leaderboardList = document.getElementById("leaderboard-list");
+
+          if (!window.gameScores || window.gameScores.length === 0) {
+            leaderboardList.innerHTML =
+              '<p style="text-align: center; opacity: 0.7;">No scores yet!</p>';
+            return;
+          }
+
+          leaderboardList.innerHTML = window.gameScores
+            .map((score, index) => {
+              const timeStr = `${Math.floor(score.time / 60)}:${(
+                score.time % 60
+              )
+                .toString()
+                .padStart(2, "0")}`;
+              return `
+                        <div class="leaderboard-entry">
+                            <span>#${index + 1}</span>
+                            <span>Score: ${score.score}</span>
+                            <span>Time: ${timeStr}</span>
+                            <span>Hints: ${score.hints}</span>
+                        </div>
+                    `;
+            })
+            .join("");
+        }
+
+        // Restart the game
+        restartGame() {
+          clearInterval(this.timerInterval);
+
+          this.currentLevel = 0;
+          this.score = 0;
+          this.startTime = Date.now();
+          this.hintsUsed = 0;
+          this.currentHints = this.maxHintsPerPuzzle;
+
+          this.gameArea.style.display = "flex";
+          this.gameComplete.style.display = "none";
+
+          this.startTimer();
+          this.displayCurrentPuzzle();
+        }
+      }
+
+      // Initialize game when page loads
+      document.addEventListener("DOMContentLoaded", () => {
+        new EmojiGame();
+      });
+    </script>
+  </body>
+</html>
