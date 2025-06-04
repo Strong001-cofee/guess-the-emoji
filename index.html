@@ -13,11 +13,17 @@
 
       body {
         font-family: "Arial", sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 50%,
+          #f093fb 100%
+        );
         min-height: 100vh;
         display: flex;
         flex-direction: column;
         color: white;
+        overflow-x: hidden;
       }
 
       .container {
@@ -43,11 +49,13 @@
       .stats {
         display: flex;
         justify-content: space-between;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.15);
         padding: 15px;
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
         margin-bottom: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
       }
 
       .stat-item {
@@ -65,17 +73,19 @@
       }
 
       .game-area {
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 25px;
         padding: 40px 20px;
         text-align: center;
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(20px);
         margin-bottom: 30px;
-        min-height: 300px;
+        min-height: 350px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
       }
 
       .emoji-display {
@@ -113,20 +123,23 @@
 
       .guess-input {
         width: 100%;
-        max-width: 300px;
-        padding: 15px;
+        max-width: 320px;
+        padding: 18px;
         font-size: 1.1rem;
         border: none;
-        border-radius: 10px;
+        border-radius: 25px;
         text-align: center;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.95);
         color: #333;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
       }
 
       .guess-input:focus {
         outline: none;
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
+        transform: translateY(-2px);
       }
 
       .button-group {
@@ -137,43 +150,48 @@
       }
 
       .btn {
-        padding: 12px 25px;
+        padding: 14px 28px;
         font-size: 1rem;
         border: none;
-        border-radius: 10px;
+        border-radius: 25px;
         cursor: pointer;
         transition: all 0.3s ease;
         font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2);
       }
 
       .btn-primary {
-        background: #4caf50;
+        background: linear-gradient(135deg, #4caf50, #45a049);
         color: white;
       }
 
       .btn-primary:hover {
-        background: #45a049;
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, #45a049, #3d8b40);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
       }
 
       .btn-secondary {
-        background: #ff9800;
+        background: linear-gradient(135deg, #ff9800, #f57c00);
         color: white;
       }
 
       .btn-secondary:hover {
-        background: #e68900;
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, #f57c00, #ef6c00);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
       }
 
       .btn-restart {
-        background: #f44336;
+        background: linear-gradient(135deg, #f44336, #d32f2f);
         color: white;
       }
 
       .btn-restart:hover {
-        background: #da190b;
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, #d32f2f, #c62828);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
       }
 
       .feedback {
@@ -256,26 +274,116 @@
       }
 
       @media (max-width: 480px) {
+        .container {
+          padding: 15px;
+        }
+
         .title {
-          font-size: 2rem;
+          font-size: 2.2rem;
+          margin-bottom: 15px;
+        }
+
+        .emoji-display {
+          font-size: 3.5rem;
+          margin-bottom: 25px;
+        }
+
+        .stats {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+          padding: 20px;
+          margin-bottom: 25px;
+        }
+
+        .stat-item {
+          background: rgba(255, 255, 255, 0.1);
+          padding: 12px;
+          border-radius: 15px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-label {
+          font-size: 0.85rem;
+          margin-bottom: 5px;
+        }
+
+        .stat-value {
+          font-size: 1.4rem;
+          font-weight: bold;
+        }
+
+        .game-area {
+          padding: 30px 20px;
+          margin-bottom: 20px;
+          min-height: 320px;
+        }
+
+        .puzzle-hint {
+          font-size: 1rem;
+          margin-bottom: 25px;
+          padding: 0 10px;
+        }
+
+        .guess-input {
+          max-width: 280px;
+          padding: 16px;
+          font-size: 1.05rem;
+          margin-bottom: 25px;
+        }
+
+        .button-group {
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .btn {
+          width: 220px;
+          padding: 16px 20px;
+          font-size: 1.05rem;
+          border-radius: 20px;
+        }
+
+        .feedback {
+          font-size: 1.1rem;
+          margin-top: 15px;
+        }
+
+        .game-complete {
+          padding: 30px 20px;
+          margin: 0 10px;
+        }
+
+        .leaderboard {
+          margin-top: 15px;
+          padding: 15px;
+        }
+
+        .leaderboard-entry {
+          font-size: 0.9rem;
+          padding: 10px 0;
+          flex-wrap: wrap;
+          gap: 5px;
+        }
+      }
+
+      @media (max-width: 320px) {
+        .title {
+          font-size: 1.8rem;
         }
 
         .emoji-display {
           font-size: 3rem;
         }
 
-        .stats {
-          flex-direction: column;
-          gap: 10px;
-        }
-
-        .button-group {
-          flex-direction: column;
-          align-items: center;
-        }
-
         .btn {
-          width: 200px;
+          width: 180px;
+          font-size: 0.95rem;
+        }
+
+        .guess-input {
+          max-width: 240px;
         }
       }
     </style>
@@ -696,7 +804,15 @@
           this.displayCurrentPuzzle();
         }
 
-        // Initialize DOM elements
+        // Shuffle array utility function
+        shuffleArray(array) {
+          const shuffled = [...array];
+          for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+          }
+          return shuffled;
+        }
         initializeElements() {
           this.gameArea = document.getElementById("game-area");
           this.emojiDisplay = document.getElementById("emoji-display");
@@ -910,6 +1026,9 @@
         // Restart the game
         restartGame() {
           clearInterval(this.timerInterval);
+
+          // Shuffle puzzles again for new game
+          this.puzzles = this.shuffleArray([...this.allPuzzles]).slice(0, 15);
 
           this.currentLevel = 0;
           this.score = 0;
